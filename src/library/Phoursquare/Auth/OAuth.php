@@ -50,7 +50,7 @@ require_once 'Phoursquare/Auth/AbstractAuth.php';
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-class Phoursquare_Auth_OAuth extends Phourquare_Auth_AbstractAuth
+class Phoursquare_Auth_OAuth extends Phoursquare_Auth_AbstractAuth
 {
 
     public function __construct()

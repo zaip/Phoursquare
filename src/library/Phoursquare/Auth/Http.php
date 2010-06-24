@@ -74,7 +74,7 @@ class Phoursquare_Auth_Http extends Phoursquare_Auth_AbstractAuth
     public function setUsername($username = null)
     {
         if(!is_null($username) && !is_string($username)) {
-            throw new InvalidArgumentException('Given-in $usernam is no string or null.');
+            throw new InvalidArgumentException('Given-in $username is no string or null.');
         }
 
         $this->_username = (string)$username;
@@ -99,7 +99,7 @@ class Phoursquare_Auth_Http extends Phoursquare_Auth_AbstractAuth
     public function setPassword($password = null)
     {
         if(!is_null($password) && !is_string($password)) {
-            throw new InvalidArgumentException('Given-in $usernam is no string or null.');
+            throw new InvalidArgumentException('Given-in $username is no string or null.');
         }
 
         $this->_password = (string)$password;
