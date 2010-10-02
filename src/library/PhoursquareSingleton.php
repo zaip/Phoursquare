@@ -27,7 +27,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category User
+ * @category Service
  * @package Phoursquare
  *
  * @license MIT-Style License
@@ -35,76 +35,78 @@
  * @copyright 2010, Sven Eisenschmidt
  * @link www.unsicherheitsagent.de
  *
- * @uses Phoursquare_User_AbstractAdvancedUser
- * @uses Phoursquare_User_PendingRequestsList
+ * @uses Phourquare_Service
  */
 
-require_once 'Phoursquare/User/AbstractAdvancedUser.php';
+require_once 'Phoursquare/Service.php';
 
 /**
- * Phoursquare_User_AuthenticatedUser
+ * PhoursquareSingleton
  *
- * @category User
+ * @category Service
  * @package Phoursquare
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-class Phoursquare_User_AuthenticatedUser extends Phoursquare_User_AbstractAdvancedUser
+final class PhoursquareSingleton extends Phoursquare_Service
 {
 
     /**
      *
-     * @param stdClass $data
+     * @var PhoursquareSingleton
      */
-    public function __construct(stdClass $data, Phoursquare_Service $service)
-    {
-        parent::__construct($data, $service);
+    private static $instance;
+
+    /**
+     *
+     * @return void
+     */
+    private function __construct() {}
+
+    /**
+     *
+     * @return void
+     */
+    private function __clone() {}
+
+    /**
+     *
+     * @return PhoursquareSingleton
+     */
+    public static function getInstance() {
+
+       if (self::$instance === NULL) {
+           self::$instance = new self;
+       }
+
+       return self::$instance;
     }
 
     /**
      *
-     * @param integer $limit
-     * @param integer $sinceId
-     * @return Phoursquare_CheckinList
+     * @return boolean
      */
-    public function getCheckins($limit = 25, $sinceId = null)
+    public static function hasAuthInstance()
     {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins($limit);
+        if(!self::$instance) {
+            return false;
+        }
+
+        return self::getInstance()->hasAuth();
     }
 
     /**
      *
-     * @return Phoursquare_CheckinList
+     * @return boolean
      */
-    public function getLastCheckin()
+    public static function hasCacheInstance()
     {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins(1)
-                    ->getFirstInList();
-    }
+        if(!self::$instance) {
+            return false;
+        }
 
-    /**
-     *
-     * @param integer|Phoursquare_Venue
-     * @param array $options
-     * @return Phoursquare_Checkin
-     */
-    public function checkin($venue, array $options = array())
-    {
-        return $this->getService()
-                    ->doCheckin($venue, $options);
-    }
-
-    /**
-     *
-     * @return Phoursquare_User_PendingRequestsList
-     */
-    public function getPendingFriendRequests()
-    {
-        return $this->getService()
-                    ->getPendingFriendRequests();
+        return self::getInstance()->hasCache();
     }
 }

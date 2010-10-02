@@ -27,7 +27,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category User
+ * @category Venue
  * @package Phoursquare
  *
  * @license MIT-Style License
@@ -35,76 +35,20 @@
  * @copyright 2010, Sven Eisenschmidt
  * @link www.unsicherheitsagent.de
  *
- * @uses Phoursquare_User_AbstractAdvancedUser
- * @uses Phoursquare_User_PendingRequestsList
+ * @uses Phoursquare_Venue_Tip
  */
 
-require_once 'Phoursquare/User/AbstractAdvancedUser.php';
+require_once 'Phoursquare/Venue/Tip.php';
 
 /**
- * Phoursquare_User_AuthenticatedUser
+ * Phoursquare_Search_Tip
  *
- * @category User
+ * @category Venue
  * @package Phoursquare
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-class Phoursquare_User_AuthenticatedUser extends Phoursquare_User_AbstractAdvancedUser
-{
-
-    /**
-     *
-     * @param stdClass $data
-     */
-    public function __construct(stdClass $data, Phoursquare_Service $service)
-    {
-        parent::__construct($data, $service);
-    }
-
-    /**
-     *
-     * @param integer $limit
-     * @param integer $sinceId
-     * @return Phoursquare_CheckinList
-     */
-    public function getCheckins($limit = 25, $sinceId = null)
-    {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins($limit);
-    }
-
-    /**
-     *
-     * @return Phoursquare_CheckinList
-     */
-    public function getLastCheckin()
-    {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins(1)
-                    ->getFirstInList();
-    }
-
-    /**
-     *
-     * @param integer|Phoursquare_Venue
-     * @param array $options
-     * @return Phoursquare_Checkin
-     */
-    public function checkin($venue, array $options = array())
-    {
-        return $this->getService()
-                    ->doCheckin($venue, $options);
-    }
-
-    /**
-     *
-     * @return Phoursquare_User_PendingRequestsList
-     */
-    public function getPendingFriendRequests()
-    {
-        return $this->getService()
-                    ->getPendingFriendRequests();
-    }
-}
+class Phoursquare_Search_Tip extends Phoursquare_Venue_Tip
+{}

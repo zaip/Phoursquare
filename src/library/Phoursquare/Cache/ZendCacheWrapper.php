@@ -27,7 +27,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category User
+ * @category Cache
  * @package Phoursquare
  *
  * @license MIT-Style License
@@ -35,76 +35,96 @@
  * @copyright 2010, Sven Eisenschmidt
  * @link www.unsicherheitsagent.de
  *
- * @uses Phoursquare_User_AbstractAdvancedUser
- * @uses Phoursquare_User_PendingRequestsList
+ * @uses Phoursquare_Cache_AbstractCache
  */
 
-require_once 'Phoursquare/User/AbstractAdvancedUser.php';
+require_once 'Phoursquare/Cache/AbstractCache.php';
 
 /**
- * Phoursquare_User_AuthenticatedUser
+ * Phoursquare_Cache_ZendCacheWrapper
  *
- * @category User
+ * @category Cache
  * @package Phoursquare
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-class Phoursquare_User_AuthenticatedUser extends Phoursquare_User_AbstractAdvancedUser
+class Phoursquare_Cache_ZendCacheWrapper extends Phoursquare_Cache_AbstractCache
 {
+    /**
+     * @var Zend_Cache_Core
+     */
+    protected $_zendCache;
 
     /**
      *
-     * @param stdClass $data
+     * @param Zend_Cache_Core $zendCache
      */
-    public function __construct(stdClass $data, Phoursquare_Service $service)
+    public function __construct(Zend_Cache_Core $zendCache)
     {
-        parent::__construct($data, $service);
+        $this->setZendCache($zendCache);
     }
 
     /**
      *
-     * @param integer $limit
-     * @param integer $sinceId
-     * @return Phoursquare_CheckinList
+     * @param Zend_Cache_Core $zendCache
+     * @return Phoursquare_Cache_ZendCacheWrapper
      */
-    public function getCheckins($limit = 25, $sinceId = null)
+    public function setZendCache(Zend_Cache_Core $zendCache)
     {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins($limit);
+        $this->_zendCache = $zendCache;
+        return $this;
     }
 
     /**
      *
-     * @return Phoursquare_CheckinList
+     * @return Zend_Cache_Core
      */
-    public function getLastCheckin()
+    public function getZendCache()
     {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins(1)
-                    ->getFirstInList();
+        return $this->_zendCache;
     }
 
     /**
      *
-     * @param integer|Phoursquare_Venue
-     * @param array $options
-     * @return Phoursquare_Checkin
+     * @param string $id
+     * @return string
      */
-    public function checkin($venue, array $options = array())
+    protected function _doFetch($id)
     {
-        return $this->getService()
-                    ->doCheckin($venue, $options);
+        return $this->_zendCache->load($id);
     }
 
     /**
      *
-     * @return Phoursquare_User_PendingRequestsList
+     * @param string $id
+     * @return boolean
      */
-    public function getPendingFriendRequests()
+    protected function _doContains($id)
     {
-        return $this->getService()
-                    ->getPendingFriendRequests();
+        return (bool)$this->_zendCache->test($id);
+    }
+
+    /**
+     *
+     * @param string $id
+     * @param string|array $data
+     * @param integer $lifeTime
+     * @return string
+     */
+    protected function _doSave($id, $data, $lifeTime = false, $tags = array())
+    {
+        return $this->_zendCache->save($data, $id, $tags, $lifeTime);
+    }
+
+    /**
+     *
+     * @param string $id
+     * @return boolean
+     */
+    protected function _doDelete($id)
+    {
+        return $this->_zendCache->remove($id);
     }
 }

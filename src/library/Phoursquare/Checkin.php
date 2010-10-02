@@ -27,7 +27,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category User
+ * @category Checkin
  * @package Phoursquare
  *
  * @license MIT-Style License
@@ -35,26 +35,29 @@
  * @copyright 2010, Sven Eisenschmidt
  * @link www.unsicherheitsagent.de
  *
+ * @uses Phoursquare_Venue
+ * @uses Phoursquare_User_AbstractUser
  */
 
 /**
- * Phoursquare_User_AbstractUser
+ * Phoursquare_Checkin
  *
- * @category User
+ * @category Checkin
  * @package Phoursquare
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-abstract class Phoursquare_User_AbstractUser
+class Phoursquare_Checkin
 {
+
     /**
      *
-     * @var Phoursquare_Service
+     * @var Phoursquare_User_AbstractUser
      */
-    protected $_service;
-
+    protected $_user;
+    
     /**
      *
      * @var integer
@@ -65,103 +68,67 @@ abstract class Phoursquare_User_AbstractUser
      *
      * @var string
      */
-    protected $_firstname;
+    protected $_shout;
 
     /**
      *
      * @var string
      */
-    protected $_lastname;
+    protected $_created;
 
     /**
      *
      * @var string
      */
-    protected $_photo;
+    protected $_timezone;
 
     /**
      *
      * @var string
      */
-    protected $_gender;
+    protected $_display;
 
     /**
      *
-     * @var string
+     * @var Phoursquare_Venue
      */
-    protected $_twitter;
-
-    /**
-     *
-     * @var string
-     */
-    protected $_facebook;
-
-    /**
-     *
-     * @var string
-     */
-    protected $_friendstatus;
+    protected $_venue;
 
     /**
      *
      * @param stdClass $data
      */
-    public function __construct(stdClass $data, Phoursquare_Service $service)
+    public function __construct(stdClass $data, Phoursquare_User_AbstractUser $user)
     {
-        $this->setService($service);
+        $this->_user = $user;
 
-        $this->fill($data, array(
-            'id',
-            'firstname',
-            'lastname',
-            'photo',
-            'gender',
-            'twitter',
-            'facebook',
-            'friendstatus'
-        ));
-    }
-
-    /**
-     *
-     * @param stdClass $data
-     * @return void
-     */
-    public function fill(stdClass $data, array $whitelist = array())
-    {
         if(!property_exists($data, 'id')) {
             throw new Exception('Missing \'id\' poperty.');
         }
 
-        foreach($data as $key => $value) {
-            if(!in_array($key, $whitelist)) {
-                continue;
-            }
-
-            $this->{'_' . $key} = is_numeric($value) ?
-                                    (int)$value : $value;
+        if(property_exists($data, 'id')) {
+            $this->_id = (int) $data->id;
         }
-    }
 
-    /**
-     *
-     * @param Phoursquare_Service $service
-     * @return Phoursquare_User_AbstractUser
-     */
-    public function setService(Phoursquare_Service $service)
-    {
-        $this->_service = $service;
-        return $this;
-    }
+        if(property_exists($data, 'created')) {
+            $this->_created = $data->created;
+        }
 
-    /**
-     *
-     * @return Phoursquare_Service
-     */
-    public function getService()
-    {
-        return $this->_service;
+        if(property_exists($data, 'timezone')) {
+            $this->_timezone = $data->timezone;
+        }
+
+        if(property_exists($data, 'display')) {
+            $this->_display = $data->display;
+        }
+
+        if(property_exists($data, 'venue')) {
+            $this->_venue = $data->venue->id;
+        }
+
+        if(property_exists($data, 'shout')) {
+            $this->_shout = $data->shout;
+        }
     }
 
     /**
@@ -170,89 +137,90 @@ abstract class Phoursquare_User_AbstractUser
      */
     public function getId()
     {
-        return (int)$this->_id;
+        return $this->_id;
     }
 
     /**
      *
      * @return string
      */
-    public function getFirstname()
+    public function getShout()
     {
-        return $this->_firstname;
+        return $this->_shout;
     }
 
     /**
      *
      * @return string
      */
-    public function getLastname()
+    public function getCreated()
     {
-        return $this->_lastname;
+        return $this->_created;
     }
 
     /**
      *
      * @return string
      */
-    public function getPhotoUrl()
+    public function getTimezone()
     {
-        return $this->_photo;
+        return $this->_timezone;
     }
 
     /**
      *
      * @return string
      */
-    public function getGender()
+    public function getDisplayMessage()
     {
-        return $this->_gender;
+        return $this->_display;
+    }
+
+    /**
+     *
+     * @return Phoursquare_User_AbstractUser
+     */
+    public function getUser()
+    {
+        return $this->_user;
+    }
+
+    /**
+     *
+     * @return Phoursquare_Service
+     */
+    public function getService()
+    {
+        return $this->getUser()
+                    ->getService();
     }
 
     /**
      *
      * @return boolean
      */
-    public function hasTwitter()
+    public function hasVenue()
     {
-        return (bool)$this->getTwitter();
+        return (bool)$this->_venue;
     }
 
     /**
      *
-     * @return string
+     * @return Phoursquare_Venue
      */
-    public function getTwitter()
+    public function getVenue()
     {
-        return $this->_twitter;
-    }
+        if(!$this->hasVenue()) {
+            return null;
+        }
 
-    /**
-     *
-     * @return boolean
-     */
-    public function hasFacebook()
-    {
-        return (bool)$this->getFacebook();
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getFacebook()
-    {
-        return $this->_facebook;
+        return $this->getUser()
+                    ->getService()
+                    ->getVenue($this->_venue)
+                    ->setRelatedCheckin($this);
     }
 
 
-    /**
-     *
-     * @return string
-     */
-    public function getFriendstatus()
-    {
-        return $this->_friendstatus;
-    }
+
 
 }

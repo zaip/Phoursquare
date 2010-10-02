@@ -27,7 +27,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category User
+ * @category ResultSet
  * @package Phoursquare
  *
  * @license MIT-Style License
@@ -35,76 +35,91 @@
  * @copyright 2010, Sven Eisenschmidt
  * @link www.unsicherheitsagent.de
  *
- * @uses Phoursquare_User_AbstractAdvancedUser
- * @uses Phoursquare_User_PendingRequestsList
+ * @uses Phoursquare_AbstractResultSet
+ * @uses Phoursquare_Checkin
  */
 
-require_once 'Phoursquare/User/AbstractAdvancedUser.php';
+require_once 'Phoursquare/AbstractResultSet.php';
+require_once 'Phoursquare/Checkin.php';
 
 /**
- * Phoursquare_User_AuthenticatedUser
+ * Phoursquare_CheckinList
  *
- * @category User
+ * @category ResultSet
  * @package Phoursquare
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-class Phoursquare_User_AuthenticatedUser extends Phoursquare_User_AbstractAdvancedUser
+class Phoursquare_CheckinList extends Phoursquare_AbstractResultSet
 {
+    /**
+     *
+     * @var Phoursquare_User_AbstractUser
+     */
+    protected $_user;
 
     /**
      *
-     * @param stdClass $data
+     * @param array $data
+     * @param Phoursquare_Service $service
+     * @param Phoursquare_User_AbstractUser $user 
      */
-    public function __construct(stdClass $data, Phoursquare_Service $service)
-    {
+    public function  __construct(
+        array $data,
+        Phoursquare_Service $service,
+        Phoursquare_User_AbstractUser $user
+    ) {
         parent::__construct($data, $service);
+        $this->_user = $user;
     }
 
     /**
      *
-     * @param integer $limit
-     * @param integer $sinceId
-     * @return Phoursquare_CheckinList
-     */
-    public function getCheckins($limit = 25, $sinceId = null)
-    {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins($limit);
-    }
-
-    /**
-     *
-     * @return Phoursquare_CheckinList
-     */
-    public function getLastCheckin()
-    {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins(1)
-                    ->getFirstInList();
-    }
-
-    /**
-     *
-     * @param integer|Phoursquare_Venue
-     * @param array $options
      * @return Phoursquare_Checkin
      */
-    public function checkin($venue, array $options = array())
+    protected function _parse($key)
     {
-        return $this->getService()
-                    ->doCheckin($venue, $options);
+        return new Phoursquare_Checkin(
+            $this->_data[$key],
+            $this->getUser()
+        );
     }
 
     /**
      *
-     * @return Phoursquare_User_PendingRequestsList
+     * @return Phoursquare_User_AbstractUser
      */
-    public function getPendingFriendRequests()
+    protected function getUser()
     {
-        return $this->getService()
-                    ->getPendingFriendRequests();
+        return $this->_user;
+    }
+
+    /**
+     *
+     * @return Phoursquare_Checkin
+     */
+    public function  current()
+    {
+        return parent::current();
+    }
+
+    /**
+     *
+     * @return Phoursquare_Checkin
+     */
+    public function getFirstInList()
+    {
+        return parent::getFirstInList();
+    }
+
+    /**
+     *
+     * @return Phoursquare_Checkin
+     */
+    public function getLastInList()
+    {
+        return parent::getLastInList();
     }
 }

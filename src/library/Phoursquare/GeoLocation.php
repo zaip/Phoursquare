@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * Copyright (c) 2010, Sven Eisenschmidt.
@@ -27,84 +28,104 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category User
+ * @category GeoLocation
  * @package Phoursquare
  *
  * @license MIT-Style License
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @link www.unsicherheitsagent.de
- *
- * @uses Phoursquare_User_AbstractAdvancedUser
- * @uses Phoursquare_User_PendingRequestsList
  */
-
-require_once 'Phoursquare/User/AbstractAdvancedUser.php';
 
 /**
- * Phoursquare_User_AuthenticatedUser
+ * Phoursquare_GeoLocation
  *
- * @category User
+ * @category GeoLocation
  * @package Phoursquare
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-class Phoursquare_User_AuthenticatedUser extends Phoursquare_User_AbstractAdvancedUser
+class Phoursquare_GeoLocation
 {
+    /**
+     *
+     * @var string
+     */
+    protected $_formattedAddress;
+    /**
+     *
+     * @var string
+     */
+    protected $_latitude;
+    /**
+     *
+     * @var string
+     */
+    protected $_longitude;
 
     /**
      *
-     * @param stdClass $data
+     * @param string $address
+     * @return Phoursquare_GeoLocation 
      */
-    public function __construct(stdClass $data, Phoursquare_Service $service)
+    public function setFormattedAddress($address)
     {
-        parent::__construct($data, $service);
+        $this->_formattedAddress = $address;
+        return $this;
     }
 
     /**
      *
-     * @param integer $limit
-     * @param integer $sinceId
-     * @return Phoursquare_CheckinList
+     * @return string
      */
-    public function getCheckins($limit = 25, $sinceId = null)
+    public function getFormattedAddress()
     {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins($limit);
+        return $this->_formattedAddress;
     }
 
     /**
      *
-     * @return Phoursquare_CheckinList
+     * @param string $lat
+     * @return Phoursquare_GeoLocation
      */
-    public function getLastCheckin()
+    public function setLatitude($lat)
     {
-        return $this->getService()
-                    ->getAuthenticatedUserCheckins(1)
-                    ->getFirstInList();
+        $this->_latitude = $lat;
+        return $this;
     }
 
     /**
      *
-     * @param integer|Phoursquare_Venue
-     * @param array $options
-     * @return Phoursquare_Checkin
+     * @return string
      */
-    public function checkin($venue, array $options = array())
+    public function getLatitude()
     {
-        return $this->getService()
-                    ->doCheckin($venue, $options);
+        return $this->_latitude;
     }
 
     /**
      *
-     * @return Phoursquare_User_PendingRequestsList
+     * @param string $lng
+     * @return Phoursquare_GeoLocation
      */
-    public function getPendingFriendRequests()
+    public function setLongitude($lng)
     {
-        return $this->getService()
-                    ->getPendingFriendRequests();
+        $this->_longitude = $lng;
+        return $this;
     }
+
+    /**
+     *
+     * @return string
+     */
+    public function getLongitude()
+    {
+        return $this->_longitude;
+    }
+
+
+
+
 }
